@@ -1,0 +1,13 @@
+{
+  "presets": ["es2015", "stage-2", "react"],
+  "plugins": [
+    "transform-runtime",
+    "transform-async-generator-functions",
+    [
+      "babel-plugin-styled-components",
+      {
+        "ssr": true
+      }
+    ]
+  ]
+}

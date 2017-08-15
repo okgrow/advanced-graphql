@@ -1,0 +1,14 @@
+#import "../Place.fragment.graphql"
+#import "../User.fragment.graphql"
+#import "../Location.fragment.graphql"
+query getPlaces {
+  places {
+    ...PlaceFields
+    location {
+      ...LocationFields
+    }
+    user {
+      ...UserFields
+    }
+  }
+}

@@ -1,0 +1,14 @@
+#import "../Place.fragment.graphql"
+#import "../User.fragment.graphql"
+#import "../Location.fragment.graphql"
+subscription placeUpdated {
+  placeUpdated {
+    ...PlaceFields
+    location {
+      ...LocationFields
+    }
+    user {
+      ...UserFields
+    }
+  }
+}

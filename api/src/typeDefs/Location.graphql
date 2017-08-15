@@ -1,0 +1,14 @@
+extend type Query {
+  locationSuggestion(name: String): Location
+}
+
+extend type Place {
+  location: Location
+}
+
+type Location {
+  id: ID!
+  formattedAddress: String!
+  latitude: Float!
+  longitude: Float!
+}
