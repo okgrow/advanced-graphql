@@ -1,0 +1,23 @@
+extend type Query {
+  places: [Place]
+}
+
+extend type Mutation {
+  createPlace(input: CreatePlaceInput!): Place!
+  updatePlace(input: UpdatePlaceInput!): Place!
+}
+
+type Place {
+  id: ID!
+  address: String!
+  visited: Boolean!
+}
+
+input CreatePlaceInput {
+  address: String!
+}
+
+input UpdatePlaceInput {
+  id: ID!
+  visited: Boolean!
+}
