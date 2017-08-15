@@ -1,0 +1,14 @@
+#import "../../../graphql/Place.fragment.gql"
+#import "../../../graphql/User.fragment.gql"
+#import "../../../graphql/Location.fragment.gql"
+mutation createPlace($input: CreatePlaceInput!) {
+  createPlace(input: $input) {
+    ...PlaceFields
+    location {
+      ...LocationFields
+    }
+    user {
+      ...UserFields
+    }
+  }
+}
