@@ -1,0 +1,5 @@
+fragment PlaceFields on Place {
+  id
+  address
+  visited
+}

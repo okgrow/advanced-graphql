@@ -1,0 +1,7 @@
+#import "../../graphql/User.fragment.gql"
+
+query currentUser {
+  currentUser {
+    ...UserFields
+  }
+}
