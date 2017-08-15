@@ -1,0 +1,7 @@
+query getWeather($coords: LocationInput!) {
+  weather(coords: $coords) {
+    id
+    icon
+    temperature
+  }
+}

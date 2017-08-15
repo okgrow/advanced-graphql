@@ -1,0 +1,29 @@
+type User {
+  id: ID!
+  username: String!
+  createdAt: Float!
+  updatedAt: Float!
+}
+
+extend type Query {
+  users(lastCreatedAt: Float, limit: Int): [User!]
+  currentUser: User
+}
+
+extend type Place {
+  user: User
+}
+
+input CreateUserInput {
+  username: String!
+}
+
+input UpdateUserInput {
+  username: String!
+}
+
+extend type Mutation {
+  createUser(input: CreateUserInput!): User
+  updateUser(id: ID!, input: UpdateUserInput!): User
+  removeUser(id: ID!): Boolean
+}
