@@ -1,0 +1,7 @@
+#import "../../graphql/User.fragment.gql"
+
+mutation createUser($input: CreateUserInput!) {
+  createUser(input: $input) {
+    ...UserFields
+  }
+}

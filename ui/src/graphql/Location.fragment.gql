@@ -1,0 +1,5 @@
+fragment LocationFields on Location {
+  id
+  latitude
+  longitude
+}
