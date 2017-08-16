@@ -1,0 +1,6 @@
+#import "../Place.fragment.graphql"
+mutation updatePlace($input: UpdatePlaceInput!) {
+  updatePlace(input: $input) {
+    ...PlaceFields
+  }
+}
