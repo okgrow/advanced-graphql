@@ -1,4 +1,5 @@
 import NodeGeocoder from 'node-geocoder';
+import Dataloader from 'dataloader';
 
 const { GOOGLE_API_KEY } = process.env;
 
@@ -7,10 +8,12 @@ const geocoder = NodeGeocoder({
   apiKey: GOOGLE_API_KEY,
 });
 
-// basic loader making network request & returning a Promise
-const loader = {
-  load: name => geocoder.geocode(name),
-};
+// smarter loader!
+const loader = new Dataloader(names => {
+  // uncomment to debug
+  // console.log('running the loader with', names.length, 'names');
+  return Promise.all(names.map(name => geocoder.geocode(name)));
+});
 
 export default class Location {
   async get(name) {
