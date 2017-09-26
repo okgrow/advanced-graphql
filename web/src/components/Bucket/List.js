@@ -121,6 +121,13 @@ const withUpdatePlaceMutation = graphql(LIST_MUTATION, {
     toggleVisited: async place => {
       await mutate({
         variables: { input: { id: place.id, visited: !place.visited } },
+        optimisticResponse: {
+          __typename: 'Mutation',
+          updatePlace: {
+            ...place,
+            visited: !place.visited,
+          },
+        },
       });
     },
   }),
