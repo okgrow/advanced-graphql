@@ -20,6 +20,9 @@ export const withCurrentUser = graphql(CURRENT_USER_QUERY, {
     loading: data.loading,
     error: data.error,
   }),
+  options: {
+    ssr: false,
+  },
 });
 
 export default withCurrentUser(CurrentUserRender);
