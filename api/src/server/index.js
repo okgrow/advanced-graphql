@@ -43,8 +43,36 @@ const startServer = async () => {
 
   const localSchema = makeExecutableSchema({ typeDefs, resolvers });
 
+  const linkSchema = `
+  extend type Location {
+    weather: Weather
+  }
+`;
+
   const schema = mergeSchemas({
-    schemas: [remoteSchema, localSchema],
+    schemas: [remoteSchema, localSchema, linkSchema],
+    resolvers: mergeInfo => ({
+      Location: {
+        weather: {
+          fragment:
+            'fragment WeatherLocation on Location { longitude latitude }',
+          resolve: ({ longitude, latitude }, args, context, info) => {
+            return mergeInfo.delegate(
+              'query',
+              'weather',
+              {
+                coords: {
+                  longitude,
+                  latitude,
+                },
+              },
+              context,
+              info
+            );
+          },
+        },
+      },
+    }),
   });
 
   const db = await MongoClient.connect(MONGO_URL);
