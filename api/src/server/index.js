@@ -112,6 +112,7 @@ const startServer = async () => {
           locations: e.locations,
           path: e.path,
         }),
+        tracing: true,
       }))(req, res, next);
     })(req, res, next);
   });
