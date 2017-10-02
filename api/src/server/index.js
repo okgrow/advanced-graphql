@@ -3,7 +3,14 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
-import { makeExecutableSchema } from 'graphql-tools';
+import { HttpLink } from 'apollo-link-http';
+import fetch from 'node-fetch';
+import {
+  introspectSchema,
+  makeRemoteExecutableSchema,
+  makeExecutableSchema,
+  mergeSchemas,
+} from 'graphql-tools';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
@@ -24,7 +31,21 @@ const {
 } = process.env;
 
 const startServer = async () => {
-  const schema = makeExecutableSchema({ typeDefs, resolvers });
+  const link = new HttpLink({
+    uri: 'https://q5p0v8rjp.lp.gql.zone/graphql',
+    fetch,
+  });
+
+  const remoteSchema = makeRemoteExecutableSchema({
+    schema: await introspectSchema(link),
+    link,
+  });
+
+  const localSchema = makeExecutableSchema({ typeDefs, resolvers });
+
+  const schema = mergeSchemas({
+    schemas: [remoteSchema, localSchema],
+  });
 
   const db = await MongoClient.connect(MONGO_URL);
 
