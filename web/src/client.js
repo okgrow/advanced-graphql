@@ -51,7 +51,7 @@ const cache = new Cache();
 
 const client = new ApolloClient({
   link,
-  cache,
+  cache: cache.restore(window.__APOLLO_STATE__ || {}),
 });
 
 export default () => (

@@ -50,9 +50,11 @@ app.use(async (req, res) => {
 
     const content = await renderToStringWithData(component);
 
+    const state = cache.extract();
+
     const styleTags = sheet.getStyleElement();
 
-    const html = <Html styleTags={styleTags} content={content} />;
+    const html = <Html styleTags={styleTags} content={content} state={state} />;
 
     res.status(200);
     res.send(`<!doctype html>\n${ReactDOM.renderToStaticMarkup(html)}`);
