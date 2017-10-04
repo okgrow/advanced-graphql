@@ -6,6 +6,7 @@ import { graphql } from 'react-apollo';
 
 import INPUT_QUERY from './Input.query.graphql';
 import INPUT_MUTATION from './Input.mutation.graphql';
+import LIST_QUERY from './List.query.graphql';
 
 const Input = ({
   setInputValue,
@@ -73,12 +74,18 @@ const Item = styled.div`
 const withInputState = withState('inputValue', 'setInputValue', '');
 
 const withCreatePlaceMutation = graphql(INPUT_MUTATION, {
-  options: {
-    refetchQueries: ['getPlaces'],
-  },
   props: ({ ownProps, mutate }) => ({
     addPlace: async address => {
-      await mutate({ variables: { input: { address } } });
+      await mutate({
+        variables: { input: { address } },
+        update: (store, { data: { createPlace } }) => {
+          const data = store.readQuery({ query: LIST_QUERY });
+
+          data.places.push(createPlace);
+
+          store.writeQuery({ query: LIST_QUERY, data });
+        },
+      });
 
       ownProps.setInputValue('');
     },
