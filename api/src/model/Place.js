@@ -32,7 +32,9 @@ export default class Place {
     };
 
     const { insertedId } = await this.collection.insertOne(docToInsert);
-
+    this.pubsub.publish('placeCreated', {
+      placeCreated: await this.findOneById(insertedId),
+    });
     return insertedId;
   }
 
