@@ -14,6 +14,7 @@ import {
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
+import { Engine } from 'apollo-engine';
 import passport from 'passport';
 import typeDefs from '../typeDefs';
 import resolvers from '../resolvers';
@@ -28,6 +29,7 @@ const {
   WS_PORT = parseInt(PORT, 10) + 1,
   MONGO_PORT = parseInt(PORT, 10) + 2,
   MONGO_URL = `mongodb://localhost:${MONGO_PORT}/database`,
+  ENGINE_API_KEY,
 } = process.env;
 
 const startServer = async () => {
@@ -75,6 +77,30 @@ const startServer = async () => {
     }),
   });
 
+  // IMPORTANT: you also need to set the port in api/.env to PORT=9000 in
+
+  const engine = new Engine({
+    engineConfig: {
+      apiKey: ENGINE_API_KEY,
+      logcfg: {
+        level: 'DEBUG',
+      },
+      origins: [
+        {
+          url: `http://localhost:${PORT}/graphql`,
+        },
+      ],
+      frontends: [
+        {
+          host: '127.0.0.1',
+          port: 8080,
+          endpoint: '/graphql',
+        },
+      ],
+    },
+  });
+  await engine.start();
+
   const db = await MongoClient.connect(MONGO_URL);
 
   const createContext = () => ({
@@ -86,6 +112,8 @@ const startServer = async () => {
   await seedDb({ db, pubsub, Place, User /*, reset: true*/ });
 
   const server = express();
+
+  server.use(engine.expressMiddleware());
 
   server.use(cors());
 
