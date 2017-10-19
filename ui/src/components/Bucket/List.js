@@ -8,7 +8,7 @@ import { withLoadingSpinner } from '../shared/LoadingSpinner';
 
 import LIST_QUERY from './List.query.graphql';
 import LIST_MUTATION from './List.mutation.graphql';
-// import LIST_SUBSCRIPTION_UPDATE from './List.subscription.update.graphql';
+import LIST_SUBSCRIPTION_UPDATE from './List.subscription.update.graphql';
 
 class List extends React.Component {
   componentWillMount() {
