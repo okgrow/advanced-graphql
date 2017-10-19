@@ -56,7 +56,7 @@ const cache = new InMemoryCache();
 // create an ApolloClient using the link & the cache you created above
 const client = new ApolloClient({
   link,
-  cache,
+  cache: cache.restore(window.__APOLLO_STATE__ || {}),
 });
 
 // wrap the BrowserRouter in an ApolloProvider using the client you created above
