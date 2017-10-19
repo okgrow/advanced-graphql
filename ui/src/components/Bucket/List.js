@@ -134,6 +134,9 @@ const withData = graphql(LIST_QUERY, {
     error: data.error,
     subscribeToMore: data.subscribeToMore,
   }),
+  options: {
+    errorPolicy: 'ignore',
+  },
 });
 
 const withUpdatePlaceMutation = graphql(LIST_MUTATION, {
