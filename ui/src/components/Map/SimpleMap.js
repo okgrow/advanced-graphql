@@ -44,4 +44,12 @@ const WeatherTooltip = styled.div`
   font-size: 2rem;
 `;
 
-export default compose(withLoadingSpinner, withGoogleMap)(SimpleMap);
+export default compose(
+  graphql(MAP_QUERY, {
+    options: ({ coords }) => ({
+      variables: { coords },
+    }),
+  }),
+  withLoadingSpinner,
+  withGoogleMap
+)(SimpleMap);
