@@ -5,6 +5,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
+import { ApolloClient } from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloProvider, renderToStringWithData } from 'react-apollo';
 import Html from './components/Html';
 import ErrorOverlay from './components/shared/ErrorOverlay';
 import App from './components/App';
@@ -24,18 +28,31 @@ app.use(async (req, res) => {
   const sheet = new ServerStyleSheet();
 
   try {
+    const cache = new InMemoryCache();
+
+    const client = new ApolloClient({
+      link: new HttpLink({
+        uri: `${API_HOST}/graphql`,
+      }),
+      cache,
+    });
+
     // to be used by react-apollo
     const component = (
-      <StaticRouter location={req.url} context={context}>
-        <StyleSheetManager sheet={sheet.instance}>
-          <App />
-        </StyleSheetManager>
-      </StaticRouter>
+      <ApolloProvider client={client}>
+        <StaticRouter location={req.url} context={context}>
+          <StyleSheetManager sheet={sheet.instance}>
+            <App />
+          </StyleSheetManager>
+        </StaticRouter>
+      </ApolloProvider>
     );
+
+    const content = await renderToStringWithData(component);
 
     const styleTags = sheet.getStyleElement();
 
-    const html = <Html styleTags={styleTags} />;
+    const html = <Html styleTags={styleTags} content={content} />;
 
     res.status(200);
     res.send(`<!doctype html>\n${ReactDOM.renderToStaticMarkup(html)}`);
