@@ -9,6 +9,7 @@ import { withLoadingSpinner } from '../shared/LoadingSpinner';
 import LIST_QUERY from './List.query.graphql';
 import LIST_MUTATION from './List.mutation.graphql';
 import LIST_SUBSCRIPTION_UPDATE from './List.subscription.update.graphql';
+import LIST_SUBSCRIPTION_CREATE from './List.subscription.create.graphql';
 
 class List extends React.Component {
   componentWillMount() {
@@ -38,6 +39,24 @@ class List extends React.Component {
         },
       });
     }
+
+    this.props.subscribeToMore({
+      document: LIST_SUBSCRIPTION_CREATE,
+      updateQuery: (prev, { subscriptionData }) => {
+        const { placeCreated } = subscriptionData;
+        if (!placeCreated) {
+          return prev;
+        }
+
+        if (!prev.places.find(place => place.id === placeCreated.id)) {
+          return {
+            ...prev,
+            places: [...prev.places, placeCreated],
+          };
+        }
+        return prev;
+      },
+    });
   }
 
   render() {
