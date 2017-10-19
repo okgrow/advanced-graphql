@@ -30,7 +30,7 @@ const Input = ({
         </Item>
       )}
       value={inputValue}
-      shouldItemRender={(item, value) => item && value}
+      shouldItemRender={(item, value) => item && value && value.length > 3}
       onChange={event => setInputValue(event.target.value)}
       onSelect={(value, item) => addPlace(item.formattedAddress)}
     />
@@ -96,6 +96,7 @@ const withCreatePlaceMutation = graphql(INPUT_MUTATION, {
 const withSuggestionsData = graphql(INPUT_QUERY, {
   options: props => ({
     variables: { search: props.inputValue },
+    skip: props.inputValue.length <= 3,
   }),
 });
 
