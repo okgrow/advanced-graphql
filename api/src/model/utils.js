@@ -10,7 +10,7 @@ export const findByIds = async (collection, ids) => {
     const _ids = ids.map(id => new ObjectId(id));
 
     // uncomment to show how it works
-    console.log('// running findByIds', collection.namespace, ids);
+    // console.log('// running findByIds', collection.namespace, ids);
 
     // get all unique results in one query
     const docs = await collection.find({ _id: { $in: _ids } }).toArray();
