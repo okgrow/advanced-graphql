@@ -4,12 +4,17 @@ import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import { ApolloServer } from 'apollo-server-express';
 import { makeExecutableSchema } from 'graphql-tools';
+import { createServer } from 'http';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql';
+import passport from 'passport';
 import typeDefs from '../typeDefs';
 import resolvers from '../resolvers';
 import { Place, Location, User } from '../model';
 import { seedDb } from '../model/utils';
 
 import applyAuthentication from './applyAuthentication';
+import pubsub from './subscriptions';
 
 const {
   PORT,
@@ -24,7 +29,13 @@ const startServer = async () => {
 
   const db = await MongoClient.connect(MONGO_URL);
 
-  await seedDb({ db, Place, User /*, reset: true*/ });
+  const createContext = () => ({
+    Place: new Place({ db, pubsub }),
+    User: new User({ db, pubsub }),
+    Location: new Location(),
+  });
+
+  await seedDb({ db, pubsub, Place, User /*, reset: true*/ });
 
   const app = express();
 
@@ -33,11 +44,7 @@ const startServer = async () => {
   app.use(bodyParser.json());
 
   app.use((req, res, next) => {
-    req.context = {
-      Place: new Place({ db }),
-      User: new User({ db }),
-      Location: new Location(),
-    };
+    req.context = createContext();
     next();
   });
 
@@ -51,6 +58,7 @@ const startServer = async () => {
     }),
 
     playground: {
+      subscriptionEndpoint: `ws://localhost:${WS_PORT}/graphql`,
       // FUTURE: code below can include an auth header, but it clears the
       // tabs on refresh. There is a PR pending that may help. See:
       // https://github.com/prisma/graphql-playground/pull/825
@@ -73,6 +81,32 @@ const startServer = async () => {
   app.listen(PORT, () => {
     console.log(`GraphQL API endpoint: http://localhost:${PORT}/graphql`);
   });
+
+  // WebSocket server for subscriptions
+  const websocketServer = createServer((req, res) => {
+    res.writeHead(404);
+    res.end();
+  });
+
+  websocketServer.listen(WS_PORT, () => {
+    console.log(
+      `GraphQL Subscriptions endpoint: ws://localhost:${WS_PORT}/graphql`,
+    );
+  });
+
+  SubscriptionServer.create(
+    {
+      schema,
+      execute,
+      subscribe,
+      // set the context on the websocket connection
+      onConnect: createContext,
+    },
+    {
+      server: websocketServer,
+      path: '/graphql',
+    },
+  );
 };
 
 startServer()
