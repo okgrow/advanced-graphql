@@ -52,6 +52,10 @@ const resolvers = {
     },
   },
   Subscription: {
+    placeCreated: {
+      subscribe: (parent, args, { Place }) =>
+        Place.pubsub.asyncIterator('placeCreated'),
+    },
     placeUpdated: {
       subscribe: (parent, args, { Place }) =>
         Place.pubsub.asyncIterator('placeUpdated'),
