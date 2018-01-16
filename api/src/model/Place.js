@@ -6,6 +6,7 @@ export default class Place {
   constructor(context) {
     this.context = context;
     this.collection = context.db.collection('places');
+    this.pubsub = context.pubsub;
     this.loader = new DataLoader(ids => findByIds(this.collection, ids));
   }
 
@@ -47,7 +48,7 @@ export default class Place {
       }
     );
     this.loader.clear(id);
-
+    this.pubsub.publish('placeUpdated', { placeUpdated: { id, ...doc } });
     return ret;
   }
 
