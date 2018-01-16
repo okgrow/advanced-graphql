@@ -51,6 +51,12 @@ const resolvers = {
       return updatedPlace;
     },
   },
+  Subscription: {
+    placeUpdated: {
+      subscribe: (parent, args, { Place }) =>
+        Place.pubsub.asyncIterator('placeUpdated'),
+    },
+  },
 };
 
 export default resolvers;
