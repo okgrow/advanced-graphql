@@ -6,11 +6,11 @@ export default class User {
   constructor(context) {
     this.context = context;
     this.collection = context.db.collection('user');
+    this.loader = new DataLoader(ids => findByIds(this.collection, ids));
   }
 
   async findOneById(id) {
-    const [result] = await findByIds(this.collection, [id]);
-    return result;
+    return this.loader.load(id);
   }
 
   async all({ lastCreatedAt = 0, limit = 100 }) {
@@ -48,14 +48,14 @@ export default class User {
         },
       }
     );
-
+    this.loader.clear(id);
     return ret;
   }
 
   async removeById(id) {
     const _id = new ObjectId(id);
     const ret = await this.collection.remove({ _id });
-
+    this.loader.clear(id);
     return ret;
   }
 }
