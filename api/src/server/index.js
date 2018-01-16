@@ -107,6 +107,8 @@ const startServer = async () => {
           ...req.context,
         },
         debug: true,
+        tracing: true,
+        cacheControl: true,
       }))(req, res, next);
     })(req, res, next);
   });
