@@ -4,6 +4,9 @@ import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { makeExecutableSchema } from 'graphql-tools';
+import { createServer } from 'http';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql';
 import passport from 'passport';
 import typeDefs from '../typeDefs';
 import resolvers from '../resolvers';
@@ -11,6 +14,7 @@ import { Place, Location, User } from '../model';
 import { seedDb } from '../model/utils';
 
 import authenticate from './authenticate';
+import pubsub from './subscriptions';
 
 const {
   PORT,
@@ -24,7 +28,13 @@ const startServer = async () => {
 
   const db = await MongoClient.connect(MONGO_URL);
 
-  await seedDb({ db, Place, User /*, reset: true*/ });
+  const createContext = () => ({
+    Place: new Place({ db, pubsub }),
+    User: new User({ db, pubsub }),
+    Location: new Location(),
+  });
+
+  await seedDb({ db, pubsub, Place, User /*, reset: true*/ });
 
   const server = express();
 
@@ -33,11 +43,7 @@ const startServer = async () => {
   server.use(bodyParser.json());
 
   server.use((req, res, next) => {
-    req.context = {
-      Place: new Place({ db }),
-      User: new User({ db }),
-      Location: new Location(),
-    };
+    req.context = createContext();
     next();
   });
 
@@ -61,6 +67,7 @@ const startServer = async () => {
     graphiqlExpress({
       endpointURL: '/graphql',
       passHeader: "authorization: 'JWT '+ localStorage['AUTH_TOKEN']",
+      subscriptionsEndpoint: `ws://localhost:${WS_PORT}/graphql`,
     })
   );
 
@@ -70,6 +77,32 @@ const startServer = async () => {
 Explore it at http://localhost:${PORT}/graphiql`
     );
   });
+
+  // WebSocket server for subscriptions
+  const websocketServer = createServer((req, res) => {
+    res.writeHead(404);
+    res.end();
+  });
+
+  websocketServer.listen(WS_PORT, () => {
+    console.log(
+      `GraphQL Subscriptions endpoint: ws://localhost:${WS_PORT}/graphql`
+    );
+  });
+
+  SubscriptionServer.create(
+    {
+      schema,
+      execute,
+      subscribe,
+      // set the context on the websocket connection
+      onConnect: createContext,
+    },
+    {
+      server: websocketServer,
+      path: '/graphql',
+    }
+  );
 };
 
 startServer()
