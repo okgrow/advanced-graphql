@@ -8,6 +8,7 @@ extend type Mutation {
 }
 
 extend type Subscription {
+  placeCreated: Place
   placeUpdated: Place
 }
 
