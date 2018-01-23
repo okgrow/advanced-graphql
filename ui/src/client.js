@@ -7,17 +7,22 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import App from './components/App';
 
 // create an HttpLink to connect to the GraphQL API: the uri is http://localhost:8080/graphql
-// -- edit here
+const link = new HttpLink({ uri: 'http://localhost:8080/graphql' });
 
 // create an InMemoryCache to store GraphQL operations results
-// -- edit here
+const cache = new InMemoryCache();
 
 // create an ApolloClient using the link & the cache you created above
-// -- edit here
+const client = new ApolloClient({
+  link,
+  cache,
+});
 
 // wrap the BrowserRouter in an ApolloProvider using the client you created above
 export default () => (
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+  <ApolloProvider client={client}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </ApolloProvider>
 );
