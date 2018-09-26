@@ -123,6 +123,8 @@ const startServer = async () => {
       // ],
     },
     // debug: true,
+    tracing: true,
+    cacheControl: true,
   });
 
   server.applyMiddleware({ app });
