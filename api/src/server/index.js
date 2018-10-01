@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import { ApolloServer } from 'apollo-server-express';
+import { ApolloEngine } from 'apollo-engine';
 import { HttpLink } from 'apollo-link-http';
 import fetch from 'node-fetch';
 import {
@@ -125,12 +126,18 @@ const startServer = async () => {
     // debug: true,
     tracing: true,
     cacheControl: true,
+    engine: false,
   });
 
   server.applyMiddleware({ app });
 
-  app.listen(PORT, () => {
-    console.log(`GraphQL API endpoint: http://localhost:${PORT}/graphql`);
+  const engine = new ApolloEngine({
+    apiKey: ENGINE_API_KEY,
+  });
+
+  engine.listen({
+    port: PORT,
+    expressApp: app,
   });
 
   // WebSocket server for subscriptions
