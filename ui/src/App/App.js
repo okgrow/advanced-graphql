@@ -1,8 +1,9 @@
 import React from 'react';
-import { Query } from 'react-apollo';
+import { Query, Subscription } from 'react-apollo';
 
 import Routes from './Routes';
 import getPlacesQuery from '../graphql/getPlaces.query.gql';
+import updateplaceSubcription from './updatePlace.subscription.gql';
 
 import Loading from './Loading';
 import Error from './Error';
@@ -19,6 +20,8 @@ const App = () => (
         return <Routes places={data.places} />;
       }}
     </Query>
+
+    <Subscription subscription={updateplaceSubcription} />
   </div>
 );
 
