@@ -1,0 +1,5 @@
+fragment WeatherFields on Weather {
+  id
+  icon
+  temperature
+}
