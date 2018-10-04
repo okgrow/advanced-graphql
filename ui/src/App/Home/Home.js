@@ -11,7 +11,7 @@ import LoginForm from './LoginForm';
 import currentUserQuery from './currentUser.query.gql';
 
 const Home = ({ places }) => (
-  <Query query={currentUserQuery}>
+  <Query query={currentUserQuery} ssr={false}>
     {({ data: { currentUser }, loading, error }) => {
       const controls = currentUser ? <Nav /> : <LoginForm />;
       return (
