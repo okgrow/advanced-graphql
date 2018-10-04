@@ -13,7 +13,7 @@ import './styles';
 
 const App = () => (
   <div>
-    <Query query={getPlacesQuery}>
+    <Query query={getPlacesQuery} errorPolicy={'ignore'}>
       {graphqlResponse => {
         const { data, loading, error, subscribeToMore } = graphqlResponse;
         if (loading) return <Loading />;
