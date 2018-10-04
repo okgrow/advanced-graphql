@@ -1,5 +1,9 @@
+#import "./Weather.fragment.gql"
 fragment LocationFields on Location {
   id
   latitude
   longitude
+  weather {
+    ...WeatherFields
+  }
 }
