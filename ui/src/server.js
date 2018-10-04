@@ -5,6 +5,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
+import { ApolloClient } from 'apollo-client';
+import { ApolloLink, Observable } from 'apollo-link';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloProvider, renderToStringWithData } from 'react-apollo';
 import Html from './components/Html';
 import ErrorOverlay from './components/ErrorOverlay';
 import App from './App/App';
@@ -24,18 +29,47 @@ app.use(async (req, res) => {
   const sheet = new ServerStyleSheet();
 
   try {
+    const cache = new InMemoryCache();
+
+    const hasSubscriptionOperation = operation =>
+      operation.query.definitions.reduce(
+        (result, definition) => result || definition.operation === 'subscription',
+        false
+      );
+
+    // Link that ignores any operation that is sent to it.
+    const devNullLink = new ApolloLink(() => new Observable(() => {}));
+
+    // Ignore all subscriptions when rendering on the server
+    const link = ApolloLink.split(
+      hasSubscriptionOperation,
+      devNullLink,
+      new HttpLink({ uri: 'http://localhost:8080/graphql' })
+    );
+
+    const client = new ApolloClient({
+      link,
+      cache,
+    });
+
     // to be used by react-apollo
     const component = (
-      <StaticRouter location={req.url} context={context}>
-        <StyleSheetManager sheet={sheet.instance}>
-          <App />
-        </StyleSheetManager>
-      </StaticRouter>
+      <ApolloProvider client={client}>
+        <StaticRouter location={req.url} context={context}>
+          <StyleSheetManager sheet={sheet.instance}>
+            <App />
+          </StyleSheetManager>
+        </StaticRouter>
+      </ApolloProvider>
     );
+
+    const content = await renderToStringWithData(component);
+
+    const state = cache.extract();
 
     const styleTags = sheet.getStyleElement();
 
-    const html = <Html styleTags={styleTags} />;
+    const html = <Html styleTags={styleTags} content={content} state={state} />;
 
     res.status(200);
     res.send(`<!doctype html>\n${ReactDOM.renderToStaticMarkup(html)}`);
