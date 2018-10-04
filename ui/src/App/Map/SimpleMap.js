@@ -3,7 +3,7 @@ import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-map
 import { Query } from 'react-apollo';
 
 import WeatherMarker from './WeatherMarker';
-// import weatherQuery from './weather.query.gql';
+import weatherQuery from './weather.query.gql';
 
 const SimpleMap = ({ currentPlace, places }) => {
   const { latitude, longitude } = currentPlace.location;
