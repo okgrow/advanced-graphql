@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:server": "rm -rf ./build && webpack --config  webpack.config.server.js",
+    "start:server": "rimraf ./build && webpack --config  webpack.config.server.js",
     "start:client": "webpack-dev-server --config webpack.config.client.js",
-    "start": "rm -rf ./.build && npm-run-all --parallel start:server start:client"
+    "start": "rimraf ./.build && npm-run-all --parallel start:server start:client"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",
@@ -59,6 +59,7 @@
     "react-router-dom": "^4.1.2",
     "recompose": "^0.25.0",
     "redux": "^3.7.2",
+    "rimraf": "^2.6.2",
     "styled-components": "^3.4.9",
     "subscriptions-transport-ws": "^0.9.15",
     "webpack": "2.2.1",
