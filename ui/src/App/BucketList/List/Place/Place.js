@@ -9,10 +9,14 @@ const Place = ({ place }) => (
     key={place.id}
     mutation={updatePlaceMutation}
     optimisticResponse={{
-      updatePlace: { ...place, visited: !place.visited },
+      updatePlace: {
+        __typename: 'UpdatePlaceResponse',
+        place: { ...place, visited: !place.visited },
+        errors: [],
+      },
     }}
   >
-    {updatePlace => {
+    {(updatePlace, { data }) => {
       const toggleVisited = id => {
         updatePlace({
           variables: {
@@ -20,6 +24,11 @@ const Place = ({ place }) => (
           },
         });
       };
+
+      if (data && data.updatePlace.errors.length) {
+        data.updatePlace.errors.forEach(({ message }) => alert(message));
+      }
+
       return <PlaceView place={place} toggleVisited={toggleVisited} />;
     }}
   </Mutation>

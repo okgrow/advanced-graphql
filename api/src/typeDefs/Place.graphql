@@ -4,12 +4,21 @@ extend type Query {
 
 extend type Mutation {
   createPlace(input: CreatePlaceInput!): Place!
-  updatePlace(input: UpdatePlaceInput!): Place!
+  updatePlace(input: UpdatePlaceInput!): UpdatePlaceResponse!
 }
 
 extend type Subscription {
   placeCreated: Place
   placeUpdated: Place
+}
+
+type Error {
+  message: String!
+}
+
+type UpdatePlaceResponse {
+  place: Place
+  errors: [Error!]!
 }
 
 type Place {
