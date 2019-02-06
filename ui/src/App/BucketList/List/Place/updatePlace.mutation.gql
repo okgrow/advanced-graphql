@@ -1,6 +1,11 @@
 #import "../../../../graphql/Place.fragment.gql"
 mutation updatePlace($input: UpdatePlaceInput!) {
   updatePlace(input: $input) {
-    ...PlaceFields
+    place {
+      ...PlaceFields
+    }
+    errors {
+      message
+    }
   }
 }

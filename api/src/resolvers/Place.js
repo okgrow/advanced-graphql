@@ -38,7 +38,11 @@ const resolvers = {
       const doc = await Place.findOneById(id);
 
       if (doc.userId !== currentUser.id) {
-        throw new Error("Hey, it's not your place!");
+        return {
+          errors: [
+            { message: "Hey, it's not your place!" }
+          ]
+        }
       }
 
       await Place.updateById(id, {
@@ -48,7 +52,7 @@ const resolvers = {
 
       const updatedPlace = await Place.findOneById(id);
 
-      return updatedPlace;
+      return { place: updatedPlace, errors: [] };
     },
   },
   Subscription: {
