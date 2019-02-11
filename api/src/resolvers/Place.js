@@ -37,14 +37,6 @@ const resolvers = {
 
       const doc = await Place.findOneById(id);
 
-      if (doc.userId !== currentUser.id) {
-        return {
-          errors: [
-            { message: "Hey, it's not your place!" }
-          ]
-        }
-      }
-
       await Place.updateById(id, {
         ...doc,
         visited,
