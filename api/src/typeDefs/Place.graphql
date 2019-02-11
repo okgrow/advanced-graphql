@@ -1,10 +1,12 @@
+directive @isAuthorized on FIELD_DEFINITION
+
 extend type Query {
   places: [Place]
 }
 
 extend type Mutation {
   createPlace(input: CreatePlaceInput!): Place!
-  updatePlace(input: UpdatePlaceInput!): UpdatePlaceResponse!
+  updatePlace(input: UpdatePlaceInput!): UpdatePlaceResponse! @isAuthorized
 }
 
 extend type Subscription {

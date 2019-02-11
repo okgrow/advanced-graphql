@@ -23,6 +23,7 @@ import { seedDb } from '../model/utils';
 
 import applyAuthentication from './applyAuthentication';
 import pubsub from './subscriptions';
+import schemaDirectives from './schemaDirectives';
 
 const PORT = 4000;
 
@@ -76,6 +77,7 @@ const startServer = async () => {
         },
       },
     },
+    schemaDirectives,
   });
 
   const db = await MongoClient.connect(MONGO_URL);
